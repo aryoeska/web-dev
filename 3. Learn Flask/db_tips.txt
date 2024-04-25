@@ -16,3 +16,8 @@ with app.app_context():
     db.session.add(item1)
     db.session.flush()  # Force SQLAlchemy to attempt to write to the database now
     db.session.commit()
+
+
+MYSQL
+username aryotas
+pass taspbogui
