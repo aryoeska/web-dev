@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Login Page
+{% endblock %}
+
+{% block content %}
+<body class="text-center">
+    <div class="container">
+        <form method="POST" class="form-signin" style="color: whitesmoke;">
+            {{ form.hidden_tag() }}
+
+            <img class="mb-4" src="https://media.licdn.com/dms/image/D5603AQF0UnV2Bd5tzA/profile-displayphoto-shrink_200_200/0/1709914280612?e=2147483647&v=beta&t=Vq2YNb7QHxMECsUsa_1dLC444DeEuwZClUxkRPzdYeY" alt="">
+            <h1 class="h3 mb-4 font-weight-normal">
+                Please Login
+            </h1>
+            <br>
+            {{ form.username.label() }}
+            {{ form.username(class="form-control", placeholder="User Name")}}
+
+            {{ form.password1.label() }}
+            {{ form.password1(class='form-control', placeholder='Password')}}
+
+            <br>
+
+            <div class="checkbox mb-3">
+                <h6>Do not have account?</h6>
+                <a href="{{ url_for('register_page') }}" class="btn btn-sm btn-secondary">Register</a>
+            </div>
+
+            {{ form.submit(class='btn btn-lg btn-block btn-primary') }}
+        </form>
+
+    </div>
+</body>
+
+{% endblock %}
