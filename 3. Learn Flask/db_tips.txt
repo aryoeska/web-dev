@@ -1,0 +1,18 @@
+from market import app, db, Item
+
+item1 = Item(name="IPhone15", price=500, barcode="878224756", description="with A99 Bionic Chipset")
+
+with app.app_context():
+    try:
+        db.session.add(item1)
+        db.session.commit()
+        print("Item added successfully.")
+    except Exception as e:
+        print(f"Failed to add item: {e}")
+
+print(app.config['SQLALCHEMY_DATABASE_URI'])
+
+with app.app_context():
+    db.session.add(item1)
+    db.session.flush()  # Force SQLAlchemy to attempt to write to the database now
+    db.session.commit()
