@@ -1,10 +1,11 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
-
+from flask_bcrypt import Bcrypt
 
 app = Flask(__name__) # set up out application
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:010202@localhost/market'
-db = SQLAlchemy(app)
+app.config['SECRET_KEY'] = '57a90d75d390273247c7506a'
 
-from market import routes
+db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
 
