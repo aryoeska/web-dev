@@ -4,7 +4,6 @@
 {% endblock %}
 
 {% block content %}
-{% include 'includes/items_modals.html' %}
     <div class="row" style="margin-top: 20px; margin-left: 20px;">
         <div class="col-8">
             <h2>Available item on the market</h2>
@@ -22,14 +21,15 @@
                 </thead>
                 <tbody>
                     {% for item in items %}
+                    {% include 'includes/items_modals.html' %}
                     <tr>
                         <td>{{ item.id }}</td>
                         <td>{{ item.name }}</td>
                         <td>{{ item.barcode }}</td>
                         <td>{{ item.price }}$</td>
                         <td>
-                            <button class="btn btn-outline btn-info" data-bs-toggle="modal" data-bs-target="#Modal-MoreInfo">More Info</button>
-                            <button class="btn btn-outline btn-success">Purchase this item</button>
+                            <button class="btn btn-outline btn-info" data-bs-toggle="modal" data-bs-target="#Modal-MoreInfo-{{ item.id }}">More Info</button>
+                            <button class="btn btn-outline btn-success" data-bs-toggle="modal" data-bs-target="#Modal-PurchaseConfirm-{{ item.id }}">Purchase this item</button>
                         </td>
                     </tr>
                     {% endfor %}
