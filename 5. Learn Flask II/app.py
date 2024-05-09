@@ -10,8 +10,10 @@ con = psycopg2.connect(
     host='localhost',
     port='5432',
     password='010202',
-    user='postgres'
+    user='postgres',
+    database='flaskarticleapp'
 )
+cursor = con.cursor()
 
 
 artic = Articles()
@@ -51,10 +53,8 @@ def register():
         email = form.email.data
         username = form.username.data
         password = sha256_crypt.encrypt(str(form.password.data))
-        
-        cursor = con.cursor()
 
-        cursor.execute("INSERT INTO users(name, email, username, password) VALUE (%s, %s, %s, %s)", (name, email, username, password))
+        cursor.execute("INSERT INTO public.users(name, email, username, password) VALUES (%s, %s, %s, %s)", (name, email, username, password))
         con.commit()
         cursor.close()
         con.close()
@@ -65,6 +65,32 @@ def register():
 
         return render_template('register.html', form = form)
     return render_template('register.html', form = form)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password_candidate = request.form['password']
+
+        result = cursor.execute('SELECT * FROM public.users WHERE username = %s', [username])
+        
+        if result > 0:
+            data = cursor.fetchone()
+            password = data['password']
+            if sha256_crypt.verify(password_candidate, password):
+                session['logged_in'] = True
+                session['username'] = username
+                flash('You are now logged in', 'succes')
+                return redirect(url_for('dashboard'))
+            else:
+                error = 'Invalid Login'
+                return render_template('login.html', error=error)
+            cursor.close()
+        else:
+            error = 'Username not found'
+            return render_template('login.html', error=error)
+
+    return render_template('login.html')
 
 if __name__ == '__main__':
     app.secret_key='secret123'
