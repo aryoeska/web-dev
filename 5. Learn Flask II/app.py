@@ -3,8 +3,16 @@ from data import Articles
 from flask_sqlalchemy import SQLAlchemy
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
+import psycopg2
 
 app = Flask(__name__)
+con = psycopg2.connect(
+    host='localhost',
+    port='5432',
+    password='010202',
+    user='postgres'
+)
+
 
 artic = Articles()
 
@@ -39,8 +47,25 @@ class RegisterForm(Form):
 def register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
+        name = form.name.data
+        email = form.email.data
+        username = form.username.data
+        password = sha256_crypt.encrypt(str(form.password.data))
+        
+        cursor = con.cursor()
+
+        cursor.execute("INSERT INTO users(name, email, username, password) VALUE (%s, %s, %s, %s)", (name, email, username, password))
+        con.commit()
+        cursor.close()
+        con.close()
+
+        flash('You are now registered and you can log in', 'succes')
+
+        redirect(url_for('index'))
+
         return render_template('register.html', form = form)
     return render_template('register.html', form = form)
 
 if __name__ == '__main__':
+    app.secret_key='secret123'
     app.run(port=5002, debug=True)
