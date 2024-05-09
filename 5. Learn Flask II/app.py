@@ -3,7 +3,9 @@ from data import Articles
 from flask_sqlalchemy import SQLAlchemy
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
+from psycopg2.extras import DictCursor
 import psycopg2
+from functools import wraps
 
 app = Flask(__name__)
 con = psycopg2.connect(
@@ -13,7 +15,7 @@ con = psycopg2.connect(
     user='postgres',
     database='flaskarticleapp'
 )
-cursor = con.cursor()
+cursor = con.cursor(cursor_factory=DictCursor)
 
 
 artic = Articles()
@@ -72,10 +74,10 @@ def login():
         username = request.form['username']
         password_candidate = request.form['password']
 
-        result = cursor.execute('SELECT * FROM public.users WHERE username = %s', [username])
-        
-        if result > 0:
-            data = cursor.fetchone()
+        cursor.execute('SELECT * FROM public.users WHERE username = %s', [username])
+        data = cursor.fetchone()
+
+        if data is not None:
             password = data['password']
             if sha256_crypt.verify(password_candidate, password):
                 session['logged_in'] = True
@@ -85,12 +87,34 @@ def login():
             else:
                 error = 'Invalid Login'
                 return render_template('login.html', error=error)
-            cursor.close()
         else:
             error = 'Username not found'
             return render_template('login.html', error=error)
-
+        cursor.close()
+        con.close()
+    
     return render_template('login.html')
+
+def is_logged_in(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            flash('Unauthorized, Please Login', 'danger')
+            return redirect(url_for('login'))
+    return wrap
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('You are now logged out', 'success')
+    return redirect(url_for('login'))
+
+@app.route('/dashboard')
+@is_logged_in
+def dashboard():
+    return render_template('dashboard.html')
 
 if __name__ == '__main__':
     app.secret_key='secret123'
