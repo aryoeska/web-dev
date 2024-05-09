@@ -153,6 +153,36 @@ def add_article():
         return redirect(url_for('dashboard'))
     return render_template('add_article.html', form=form)
 
+
+@app.route('/edit_article/<string:id>', methods=['GET', 'POST'])
+@is_logged_in
+def edit_article(id):
+    cursor.execute("SELECT * FROM public.articles WHERE id = %s", [id])
+    article = cursor.fetchone()
+    form = ArticleForm(request.form)
+    form.title.data = article['title']
+    form.body.data = article['body']
+    if request.method == 'POST' and form.validate():
+        title = request.form['title']
+        body = request.form['body']
+
+        cursor.execute('UPDATE articles SET title=%s, body=%s WHERE id=%s', (title, body, id ))
+
+        con.commit()
+        flash('Article Updated', 'succes')
+
+        return redirect(url_for('dashboard'))
+    return render_template('edit_article.html', form=form)
+
+@app.route('/delete_article/<string:id>', methods=['POST'])
+@is_logged_in
+def delete_article(id):
+    cursor.execute('DELETE FROM articles WHERE id = %s', [id])
+    con.commit()
+    flash('Article Deleted', 'succes')
+
+    return redirect(url_for('dashboard'))
+
 if __name__ == '__main__':
     app.secret_key='secret123'
     app.run(port=5002, debug=True)
