@@ -17,6 +17,10 @@
         border: 2px solid #fff;
         color: #fff;
       }
+
+      .child {
+        background-color: #2041d3;
+      }
     </style>
   </head>
   <body>
@@ -29,6 +33,37 @@
       <div class="row">
         <div class="col-md-8">Col1</div>
         <div class="col-md-4">Col2</div>
+      </div>
+    </div>
+    <div class="container text-center border">
+      <div class="row align-items-start" style="height: 500px">
+        <div class="col">One of three columns</div>
+        <div class="col">One of three columns</div>
+        <div class="col">One of three columns</div>
+      </div>
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-2">1</div>
+          <div class="col-2">1</div>
+        </div>
+      </div>
+    </div>
+    <br />
+    <h2 class="container text-center">Gutter</h2>
+    <div class="container text-center my-5">
+      <div class="row gx-5 gy-3">
+        <div class="col-6">
+          <div class="child p-3">Gutter 1</div>
+        </div>
+        <div class="col-6">
+          <div class="child p-3">Gutter 2</div>
+        </div>
+        <div class="col-6">
+          <div class="child p-3">Gutter 3</div>
+        </div>
+        <div class="col-6">
+          <div class="child p-3">Gutter 4</div>
+        </div>
       </div>
     </div>
     <script
